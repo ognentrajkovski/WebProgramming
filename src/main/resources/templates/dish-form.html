@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Dish form</title>
+  <style>
+    body {
+      width: 600px;
+      margin: auto;
+      font-family: Arial, sans-serif;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input {
+      width: 100%;
+      padding: 6px;
+      margin-top: 3px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 8px 16px;
+    }
+  </style>
+</head>
+<body>
+
+<h2 th:text="${dish != null && dish.id != null} ? 'Edit dish' : 'Add new dish'">
+  Dish form
+</h2>
+
+<form th:action="@{${action}}" method="POST" th:object="${dish}">
+
+  <!-- dishId -->
+  <label for="dishId">Dish ID:</label>
+  <input id="dishId" type="text" th:field="*{dishId}" required>
+
+  <!-- name -->
+  <label for="name">Name:</label>
+  <input id="name" type="text" th:field="*{name}" required>
+
+  <!-- cuisine -->
+  <label for="cuisine">Cuisine:</label>
+  <input id="cuisine" type="text" th:field="*{cuisine}" required>
+
+  <!-- preparationTime -->
+  <label for="preparationTime">Preparation time (minutes):</label>
+  <input id="preparationTime" type="number" th:field="*{preparationTime}" min="1" required>
+
+  <button type="submit">Save</button>
+</form>
+
+</body>
+</html>

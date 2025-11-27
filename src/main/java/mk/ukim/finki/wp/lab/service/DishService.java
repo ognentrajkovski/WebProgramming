@@ -8,4 +8,12 @@ import java.util.Optional;
 public interface DishService {
     List<Dish> listDishes();
     Optional<Dish> findByDishId(String dishId);
+
+    Optional<Dish> findById(Long id);
+
+    Dish create(String dishId, String name, String cuisine, int preparationTime);
+
+    Dish update(Long id, String dishId, String name, String cuisine, int preparationTime);
+
+    void delete(Long id);
 }
