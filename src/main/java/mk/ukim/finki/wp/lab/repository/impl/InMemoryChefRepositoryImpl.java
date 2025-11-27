@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class InMemoryChefRepositoryImpl implements ChefRepository{
+public class InMemoryChefRepositoryImpl implements ChefRepository {
 
 
     @Override
@@ -27,8 +27,17 @@ public class InMemoryChefRepositoryImpl implements ChefRepository{
 
     @Override
     public Chef save(Chef chef) {
-        DataHolder.chefs.removeIf(c -> c.getId().equals(chef.getId()));
+        if (chef.getId() != null)
+            deleteById(chef.getId());
+        else
+            chef.setId((long) (Math.random() * 1000));
+
         DataHolder.chefs.add(chef);
         return chef;
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        DataHolder.chefs.removeIf(chef -> chef.getId().equals(id));
     }
 }
