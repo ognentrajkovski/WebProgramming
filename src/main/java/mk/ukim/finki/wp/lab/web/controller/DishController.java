@@ -19,6 +19,7 @@ public class DishController {
         this.dishService = dishService;
         this.chefService = chefService;
     }
+
     @GetMapping
     public String getDishesPage(@RequestParam(required = false) String error, Model model) {
         if (error != null && !error.isEmpty()) {
@@ -29,29 +30,15 @@ public class DishController {
         model.addAttribute("dishes", dishService.listDishes());
         return "listDishes";
     }
+
+    // --- CREATE ---
     @PostMapping("/add")
     public String saveDish(@RequestParam String dishId,
                            @RequestParam String name,
                            @RequestParam String cuisine,
-                           @RequestParam int preparationTime){
+                           @RequestParam int preparationTime) {
 
-        dishService.create(dishId,name,cuisine,preparationTime);
-        return "redirect:/dishes";
-    }
-
-    @PostMapping("/edit/{id}")
-    public String editDish(@PathVariable Long id,
-                           @RequestParam String dishId,
-                           @RequestParam String name,
-                           @RequestParam String cuisine,
-                           @RequestParam int preparationTime){
-        dishService.update(id,dishId,name,cuisine,preparationTime);
-        return "redirect:/dishes";
-    }
-
-    @GetMapping("/delete/{id}")
-    public String deleteDish(@PathVariable Long id) {
-        dishService.delete(id);
+        dishService.create(dishId, name, cuisine, preparationTime);
         return "redirect:/dishes";
     }
 
@@ -62,50 +49,66 @@ public class DishController {
         return "dish-form";
     }
 
+    // --- UPDATE ---
     @GetMapping("/dish-form/{id}")
     public String getEditDishForm(@PathVariable Long id, Model model) {
-        if(dishService.findById(id).isEmpty())
+        Dish dish = dishService.findById(id)
+                .orElse(null);
+
+        if (dish == null)
             return "redirect:/dishes?error=DishNotFound";
-
-        Dish dish = dishService.findById(id).get();
-
 
         model.addAttribute("dish", dish);                    // постоечки dish
         model.addAttribute("action", "/dishes/edit/" + id);  // POST submit URL
         return "dish-form";
     }
 
+    @PostMapping("/edit/{id}")
+    public String editDish(@PathVariable Long id,
+                           @RequestParam String dishId,
+                           @RequestParam String name,
+                           @RequestParam String cuisine,
+                           @RequestParam int preparationTime) {
+
+        // Вчитување од базата, промена на полиња и зачувување
+        dishService.update(id, dishId, name, cuisine, preparationTime);
+        return "redirect:/dishes";
+    }
+
+    // --- DELETE ---
+    @GetMapping("/delete/{id}")
+    public String deleteDish(@PathVariable Long id) {
+        dishService.delete(id);
+        return "redirect:/dishes";
+    }
+
+    // --- ASSIGN DISH TO CHEF ---
     @GetMapping("/choose")
     public String showDishChoosePage(@RequestParam Long chefId, Model model) {
-
-        Chef chef = chefService.findById(chefId).get();
-
+        Chef chef = chefService.findById(chefId).orElse(null);
+        if (chef == null)
+            return "redirect:/chefs?error=ChefNotFound";
 
         model.addAttribute("chef", chef);
         model.addAttribute("dishes", dishService.listDishes());
-
         return "selectDishForChef";
     }
 
     @PostMapping("/add-to-chef")
     public String addDishToChef(@RequestParam Long chefId,
-                                @RequestParam String dishId,
-                                Model model) {
-
-        Chef chef = chefService.addDishToChef(chefId, dishId);
-        model.addAttribute("chef", chef);
-
-        return "chefDetails"; // ова HTML веќе го имаш
+                                @RequestParam String dishId) {
+        chefService.addDishToChef(chefId, dishId);
+        return "redirect:/chefs/details/" + chefId; // Redirect на деталите за шефот
     }
 
     @GetMapping("/add-to-chef")
     public String showAddDishToChefPage(@RequestParam Long chefId, Model model) {
-        Chef chef = chefService.findById(chefId).get();
+        Chef chef = chefService.findById(chefId).orElse(null);
+        if (chef == null)
+            return "redirect:/chefs?error=ChefNotFound";
 
         model.addAttribute("chef", chef);
         model.addAttribute("dishes", dishService.listDishes());
-
         return "selectDishForChef";
     }
 }
-

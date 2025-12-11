@@ -1,9 +1,6 @@
 package mk.ukim.finki.wp.lab.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -21,16 +18,16 @@ public class Dish {
     private Long id;
 
     private String dishId;
-
     private String name;
-
     private String cuisine;
-
     private int preparationTime;
+
+    @ManyToOne
+    @JoinColumn(name = "chef_id")
+    private Chef chef;
 
 
     public Dish(String name, String cuisine, int preparationTime) {
-        this.id = (long) (Math.random() * 1000);
         this.dishId = String.valueOf((long)(Math.random() * 1000));
         this.name = name;
         this.cuisine = cuisine;

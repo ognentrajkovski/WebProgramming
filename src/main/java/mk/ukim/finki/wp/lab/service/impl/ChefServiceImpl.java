@@ -20,7 +20,6 @@ public class ChefServiceImpl implements ChefService {
         this.dishRepository = dishRepository;
     }
 
-
     @Override
     public List<Chef> listChefs() {
         return chefRepository.findAll();
@@ -38,26 +37,31 @@ public class ChefServiceImpl implements ChefService {
         Dish dish = dishRepository.findByDishId(dishId)
                 .orElseThrow(() -> new RuntimeException("Dish not found"));
 
-        if (!chef.getDishes().contains(dish)) {
-            chef.getDishes().add(dish);
-        }
-
-        return chefRepository.save(chef);
+        dish.setChef(chef);
+        dishRepository.save(dish);
+        return chef;
     }
 
     @Override
     public Chef create(String firstName, String lastName, String bio) {
-        Chef chef = new Chef(firstName, lastName, bio);
-        return this.chefRepository.save(chef);
+        Chef chef = new Chef();
+        chef.setFirstName(firstName);
+        chef.setLastName(lastName);
+        chef.setBio(bio);
+        return chefRepository.save(chef);
     }
 
     @Override
     public Chef update(Long id, String firstName, String lastName, String bio) {
-        Chef chef = new Chef(id, firstName, lastName, bio);
-        return this.chefRepository.save(chef);
+        Chef chef = chefRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Chef not found"));
+        chef.setFirstName(firstName);
+        chef.setLastName(lastName);
+        chef.setBio(bio);
+        return chefRepository.save(chef);
     }
     @Override
     public void delete(Long id) {
-        this.chefRepository.deleteById(id);
+        chefRepository.deleteById(id);
     }
 }
